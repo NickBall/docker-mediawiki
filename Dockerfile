@@ -10,8 +10,9 @@ RUN set -x; \
         g++ \
         libicu52 \
         libicu-dev \
-    && pecl install intl apcu \
+    && pecl install intl apcu-beta \
     && echo extension=intl.so >> /usr/local/etc/php/conf.d/ext-intl.ini \
+    && echo extension=apcu.so >> /usr/local/etc/php/conf.d/ext-intl.ini \
     && apt-get purge -y --auto-remove g++ libicu-dev \
     && rm -rf /var/lib/apt/lists/*
 
