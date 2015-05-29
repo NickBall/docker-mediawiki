@@ -10,12 +10,12 @@ RUN set -x; \
         g++ \
         libicu52 \
         libicu-dev \
-    && pecl install intl \
+    && pecl install intl apcu \
     && echo extension=intl.so >> /usr/local/etc/php/conf.d/ext-intl.ini \
     && apt-get purge -y --auto-remove g++ libicu-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install mysqli opcache apcu
+RUN docker-php-ext-install mysqli opcache
 
 RUN set -x; \
     apt-get update \
