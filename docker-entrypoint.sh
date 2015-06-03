@@ -56,6 +56,18 @@ fi
 
 : ${MEDIAWIKI_DB_HOST:=${MYSQL_PORT_3306_TCP#tcp://}}
 
+#Add delay to allow networking to start (HACKY)
+JUSTHOST=${MEDIAWIKI_DB_HOST%:*}
+count=10
+while ! ping -c 1 $JUSTHOST > /dev/null 2>&1; do
+    sleep 1
+    count=$(( count - 1 ))
+    if [ $count -lt 1 ]; then
+        break
+    fi
+done
+
+
 TERM=dumb php -- "$MEDIAWIKI_DB_HOST" "$MEDIAWIKI_DB_USER" "$MEDIAWIKI_DB_PASSWORD" "$MEDIAWIKI_DB_NAME" <<'EOPHP'
 <?php
 // database might not exist, so let's try creating it (just to be safe)
