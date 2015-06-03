@@ -59,17 +59,16 @@ fi
 #Add delay to allow networking to start (HACKY)
 JUSTHOST=${MEDIAWIKI_DB_HOST%:*}
 count=10
-echo -n "Pinging $JUSTHOST"
+echo >&2 "Pinging $JUSTHOST"
 while ! ping -c 1 $JUSTHOST > /dev/null 2>&1; do
     sleep 1
     count=$(( count - 1 ))
-    echo -n "."
+    echo >&2 "."
     if [ $count -lt 1 ]; then
-        echo "Found $JUSTHOST"
+        echo >&2 "Found $JUSTHOST"
         break
     fi
 done
-echo ""
 
 TERM=dumb php -- "$MEDIAWIKI_DB_HOST" "$MEDIAWIKI_DB_USER" "$MEDIAWIKI_DB_PASSWORD" "$MEDIAWIKI_DB_NAME" <<'EOPHP'
 <?php
