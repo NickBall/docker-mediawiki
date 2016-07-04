@@ -47,9 +47,9 @@ if [ -d "$MEDIAWIKI_SHARED" ]; then
 
 	if [ -e "$MEDIAWIKI_SHARED/composer.lock" -a -e "$MEDIAWIKI_SHARED/composer.json" ]; then
 		wget https://getcomposer.org/composer.phar
-		rm composer.lock
+		rm -f composer.lock
 		ln -s "$MEDIAWIKI_SHARED/composer.lock" composer.lock
-		rm composer.json
+		rm -f composer.json
 		ln -s "$MEDIAWIKI_SHARED/composer.json" composer.json
 		php composer.phar install --no-dev
 	fi
