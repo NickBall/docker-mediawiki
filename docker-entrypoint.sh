@@ -45,6 +45,13 @@ if [ -d "$MEDIAWIKI_SHARED" ]; then
 		ln -s "$MEDIAWIKI_SHARED/LocalSettings.php" LocalSettings.php
 	fi
 
+	if [ -e "$MEDIAWIKI_SHARED/composer.lock" -a -e "$MEDIAWIKI_SHARED/composer.json" ]; then
+		wget https://getcomposer.org/composer.phar
+		ln -s "$MEDIAWIKI_SHARED/composer.lock" composer.lock
+		ln -s "$MEDIAWIKI_SHARED/composer.json" composer.json
+		php composer.phar install --no-dev
+	fi
+
 	# If the images directory only contains a README, then link it to
 	# $MEDIAWIKI_SHARED/images, creating the shared directory if necessary
 	if [ "$(ls images)" = "README" -a ! -L images ]; then
@@ -65,6 +72,11 @@ if [ -d "$MEDIAWIKI_SHARED" ]; then
 		ln -s "$MEDIAWIKI_SHARED/skins" /var/www/html/skins
 	fi
 
+	if [ -d "$MEDIAWIKI_SHARED/vendor" -a ! -h /var/www/html/vendor ]; then
+		echo >&2 "Found 'vendor' folder in data volume, creating symbolic link."
+		rm -rf /var/www/html/vendor
+		ln -s "$MEDIAWIKI_SHARED/vendor" /var/www/html/vendor
+	fi
 
 fi
 

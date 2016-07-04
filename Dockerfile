@@ -12,6 +12,8 @@ RUN set -x; \
         libicu52 \
         libicu-dev \
         imagemagick \
+        git \
+        wget \
     && pecl install intl \
     && pecl install channel://pecl.php.net/APCu-4.0.11 \
     && echo extension=intl.so >> /usr/local/etc/php/conf.d/ext-intl.ini \
