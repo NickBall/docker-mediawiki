@@ -37,7 +37,7 @@ if ! [ -e index.php -a -e includes/DefaultSettings.php ]; then
 	echo >&2 "Complete! MediaWiki has been successfully copied to $(pwd)"
 fi
 
-: ${MEDIAWIKI_SHARED:=/var/www-shared/html}
+: ${MEDIAWIKI_SHARED:=/data}
 if [ -d "$MEDIAWIKI_SHARED" ]; then
 	# If there is no LocalSettings.php but we have one under the shared
 	# directory, symlink it
@@ -52,6 +52,20 @@ if [ -d "$MEDIAWIKI_SHARED" ]; then
 		mkdir -p "$MEDIAWIKI_SHARED/images"
 		ln -s "$MEDIAWIKI_SHARED/images" images
 	fi
+
+	if [ -d "$MEDIAWIKI_SHARED/extensions" -a ! -h /var/www/html/extensions ]; then
+		echo >&2 "Found 'extensions' folder in data volume, creating symbolic link."
+		rm -rf /var/www/html/extensions
+		ln -s "$MEDIAWIKI_SHARED/extensions" /var/www/html/extensions
+	fi
+
+	if [ -d "$MEDIAWIKI_SHARED/skins" -a ! -h /var/www/html/skins ]; then
+		echo >&2 "Found 'skins' folder in data volume, creating symbolic link."
+		rm -rf /var/www/html/skins
+		ln -s "$MEDIAWIKI_SHARED/skins" /var/www/html/skins
+	fi
+
+
 fi
 
 : ${MEDIAWIKI_DB_HOST:=${MYSQL_PORT_3306_TCP#tcp://}}
