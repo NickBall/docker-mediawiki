@@ -39,19 +39,8 @@ fi
 
 : ${MEDIAWIKI_SHARED:=/data}
 if [ -d "$MEDIAWIKI_SHARED" ]; then
-	# If there is no LocalSettings.php but we have one under the shared
-	# directory, symlink it
 	if [ -e "$MEDIAWIKI_SHARED/LocalSettings.php" -a ! -e LocalSettings.php ]; then
-		ln -s "$MEDIAWIKI_SHARED/LocalSettings.php" LocalSettings.php
-	fi
-
-	if [ -e "$MEDIAWIKI_SHARED/composer.lock" -a -e "$MEDIAWIKI_SHARED/composer.json" ]; then
-		wget https://getcomposer.org/composer.phar
-		rm -f composer.lock
-		ln -s "$MEDIAWIKI_SHARED/composer.lock" composer.lock
-		rm -f composer.json
-		ln -s "$MEDIAWIKI_SHARED/composer.json" composer.json
-		php composer.phar install --no-dev
+		cp "$MEDIAWIKI_SHARED/LocalSettings.php" LocalSettings.php
 	fi
 
 	# If the images directory only contains a README, then link it to
@@ -62,24 +51,32 @@ if [ -d "$MEDIAWIKI_SHARED" ]; then
 		ln -s "$MEDIAWIKI_SHARED/images" images
 	fi
 
-	if [ -d "$MEDIAWIKI_SHARED/extensions" -a ! -h /var/www/html/extensions ]; then
-		echo >&2 "Found 'extensions' folder in data volume, creating symbolic link."
+	if [ -d "$MEDIAWIKI_SHARED/extensions" ]; then
+		echo >&2 "Found 'extensions' folder in data volume, replacing local"
 		rm -rf /var/www/html/extensions
-		ln -s "$MEDIAWIKI_SHARED/extensions" /var/www/html/extensions
+		cp -R "$MEDIAWIKI_SHARED/extensions" /var/www/html/extensions
 	fi
 
-	if [ -d "$MEDIAWIKI_SHARED/skins" -a ! -h /var/www/html/skins ]; then
-		echo >&2 "Found 'skins' folder in data volume, creating symbolic link."
+	if [ -d "$MEDIAWIKI_SHARED/skins" ]; then
+		echo >&2 "Found 'skins' folder in data volume, replacing local"
 		rm -rf /var/www/html/skins
-		ln -s "$MEDIAWIKI_SHARED/skins" /var/www/html/skins
+		cp -R "$MEDIAWIKI_SHARED/skins" /var/www/html/skins
 	fi
 
-	if [ -d "$MEDIAWIKI_SHARED/vendor" -a ! -h /var/www/html/vendor ]; then
-		echo >&2 "Found 'vendor' folder in data volume, creating symbolic link."
+	if [ -d "$MEDIAWIKI_SHARED/vendor" ]; then
+		echo >&2 "Found 'vendor' folder in data volume, replacing local"
 		rm -rf /var/www/html/vendor
-		ln -s "$MEDIAWIKI_SHARED/vendor" /var/www/html/vendor
+		cp -R "$MEDIAWIKI_SHARED/vendor" /var/www/html/vendor
 	fi
-
+	
+	if [ -e "$MEDIAWIKI_SHARED/composer.lock" -a -e "$MEDIAWIKI_SHARED/composer.json" ]; then
+		wget https://getcomposer.org/composer.phar
+		rm -f composer.lock
+		cp -R "$MEDIAWIKI_SHARED/composer.lock" composer.lock
+		rm -f composer.json
+		cp -R  "$MEDIAWIKI_SHARED/composer.json" composer.json
+		php composer.phar install --no-dev
+	fi
 fi
 
 : ${MEDIAWIKI_DB_HOST:=${MYSQL_PORT_3306_TCP#tcp://}}
